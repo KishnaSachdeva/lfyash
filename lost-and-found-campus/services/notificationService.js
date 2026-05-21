@@ -1,5 +1,7 @@
 const prisma = require('./prisma');
 
+const normalizeNotificationType = (type) => String(type || 'GENERAL').toUpperCase();
+
 const notificationService = {
   async createNotification(userId, message, itemId = null, type = 'GENERAL') {
     return prisma.notification.create({
@@ -7,7 +9,7 @@ const notificationService = {
         userId,
         message,
         itemId,
-        type,
+        type: normalizeNotificationType(type),
       },
     });
   },
@@ -30,12 +32,21 @@ const notificationService = {
   },
 
   async markAsRead(notificationId, userId) {
-    return prisma.notification.update({
+    return prisma.notification.updateMany({
       where: {
         id: notificationId,
-        userId: userId,
+        userId,
       },
       data: { isRead: true },
+    });
+  },
+
+  async deleteNotification(notificationId, userId) {
+    return prisma.notification.deleteMany({
+      where: {
+        id: notificationId,
+        userId,
+      },
     });
   },
 

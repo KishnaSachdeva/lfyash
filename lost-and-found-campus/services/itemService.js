@@ -4,13 +4,17 @@ const { tokenize } = require('../utils/matchAlgo');
 const notificationService = require('./notificationService');
 const { findMatches } = require('../utils/matchAlgo');
 
+const normalizeEnum = (value) => value && String(value).toUpperCase();
+
 const itemService = {
   async createItem(itemData) {
     const keywords = tokenize(itemData.description);
+    const itemType = normalizeEnum(itemData.type);
 
     const item = await prisma.item.create({
       data: {
         ...itemData,
+        type: itemType,
         keywords,
       },
     });
@@ -18,7 +22,7 @@ const itemService = {
     // Trigger matching algorithm
     const candidates = await prisma.item.findMany({
       where: {
-        type: itemData.type === 'lost' ? 'FOUND' : 'LOST',
+        type: itemType === 'LOST' ? 'FOUND' : 'LOST',
         status: 'ACTIVE',
         NOT: { id: item.id },
       },
@@ -46,8 +50,8 @@ const itemService = {
 
     const where = {};
     if (category) where.category = category;
-    if (status) where.status = status;
-    if (type) where.type = type;
+    if (status) where.status = normalizeEnum(status);
+    if (type) where.type = normalizeEnum(type);
 
     const [items, total] = await Promise.all([
       prisma.item.findMany({

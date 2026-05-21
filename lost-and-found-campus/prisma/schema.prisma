@@ -118,3 +118,11 @@ model UserSession {
 
   @@map("user_sessions")
 }
+
+model Session {
+  sid    String   @id
+  sess   Json
+  expire DateTime
+
+  @@map("sessions")
+}

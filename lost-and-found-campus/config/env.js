@@ -15,7 +15,7 @@ const path = require('path');
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
 // Validate required environment variables
-const requiredEnvVars = ['MONGO_URI', 'JWT_SECRET', 'SESSION_SECRET'];
+const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET', 'SESSION_SECRET'];
 
 const missingVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
 
@@ -29,7 +29,7 @@ if (missingVars.length > 0) {
 const config = {
   port: process.env.PORT || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
-  mongoUri: process.env.MONGO_URI,
+  databaseUrl: process.env.DATABASE_URL,
   jwtSecret: process.env.JWT_SECRET,
   jwtExpire: process.env.JWT_EXPIRE || '7d',
   sessionSecret: process.env.SESSION_SECRET,

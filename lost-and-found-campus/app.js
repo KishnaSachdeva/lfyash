@@ -14,9 +14,9 @@ const express = require('express');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
 const path = require('path');
 const methodOverride = require('method-override');
+const PrismaSessionStore = require('./services/sessionStore');
 
 // Load environment variables
 require('./config/env');
@@ -65,10 +65,7 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false, // Don't save session if unmodified
     saveUninitialized: false, // Don't create session until something stored
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGO_URI,
-      ttl: 7 * 24 * 60 * 60, // Session expires in 7 days
-    }),
+    store: new PrismaSessionStore(),
     cookie: {
       httpOnly: true, // Prevent XSS
       secure: process.env.NODE_ENV === 'production', // HTTPS only in production

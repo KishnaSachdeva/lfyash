@@ -9,7 +9,7 @@ const express = require('express');
 const router = express.Router();
 
 const { authMiddleware } = require('../middlewares/authMiddleware');
-const User = require('../models/User');
+const notificationService = require('../services/notificationService');
 
 /**
  * @route   GET /api/notifications/unread-count
@@ -18,8 +18,8 @@ const User = require('../models/User');
  */
 router.get('/unread-count', authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-    const unreadCount = user.notifications.filter(n => !n.isRead).length;
+    const notifications = await notificationService.getUserNotifications(req.user.id, 100);
+    const unreadCount = notifications.filter(n => !n.isRead).length;
 
     res.json({
       success: true,
@@ -40,12 +40,12 @@ router.get('/unread-count', authMiddleware, async (req, res) => {
  */
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const notifications = await notificationService.getUserNotifications(req.user.id, 50);
 
     res.json({
       success: true,
-      count: user.notifications.length,
-      notifications: user.notifications,
+      count: notifications.length,
+      notifications,
     });
   } catch (error) {
     res.status(500).json({
@@ -62,14 +62,12 @@ router.get('/', authMiddleware, async (req, res) => {
  */
 router.patch('/mark-read', authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-
-    // Mark all as read
-    user.notifications.forEach(n => {
-      n.isRead = true;
-    });
-
-    await user.save();
+    const notifications = await notificationService.getUserNotifications(req.user.id, 100);
+    await Promise.all(
+      notifications
+        .filter(n => !n.isRead)
+        .map(n => notificationService.markAsRead(n.id, req.user.id))
+    );
 
     res.json({
       success: true,
@@ -90,14 +88,7 @@ router.patch('/mark-read', authMiddleware, async (req, res) => {
  */
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-
-    // Filter out the notification with matching ID
-    user.notifications = user.notifications.filter(
-      n => n._id.toString() !== req.params.id
-    );
-
-    await user.save();
+    await notificationService.deleteNotification(req.params.id, req.user.id);
 
     res.json({
       success: true,

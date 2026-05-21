@@ -11,7 +11,6 @@
 const http = require('http');
 const { Server } = require('socket.io');
 const app = require('./app');
-const connectDB = require('./config/db');
 const { initializeChatHandlers } = require('./controllers/chatController');
 
 // Load environment variables
@@ -24,6 +23,7 @@ require('./config/env');
  * ==========================================
  */
 const server = http.createServer(app);
+const allowedOrigin = process.env.FRONTEND_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000';
 
 /**
  * ==========================================
@@ -33,7 +33,7 @@ const server = http.createServer(app);
  */
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: allowedOrigin,
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -56,14 +56,6 @@ io.on('disconnect', (socket) => {
 
 /**
  * ==========================================
- * CONNECT TO DATABASE
- * SYLLABUS CONCEPT: MongoDB connection, Async operations
- * ==========================================
- */
-connectDB();
-
-/**
- * ==========================================
  * START SERVER
  * SYLLABUS CONCEPT: Server lifecycle, Event listeners
  * ==========================================
@@ -76,7 +68,7 @@ server.listen(PORT, () => {
   console.log(`🚀 Server running in ${process.env.NODE_ENV} mode`);
   console.log(`📍 Port: http://localhost:${PORT}`);
   console.log(`📧 Email: ${process.env.EMAIL_USER || 'Not configured (dev mode)'}`);
-  console.log(`🗄️  Database: ${process.env.MONGO_URI}`);
+  console.log(`🗄️  Database: ${process.env.DATABASE_URL ? 'PostgreSQL configured' : 'Not configured'}`);
   console.log('============================================');
   console.log('\nPress Ctrl+C to stop the server\n');
 });
