@@ -950,26 +950,6 @@ input, textarea, select {
   color: var(--text-muted);
 }
 
-.otp-header {
-  text-align: center;
-  padding: var(--spacing-lg);
-  background: rgba(59, 130, 246, 0.1);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-md);
-}
-
-.otp-icon {
-  font-size: 3rem;
-  display: block;
-  margin-bottom: var(--spacing-sm);
-}
-
-.otp-input {
-  font-size: 1.5rem !important;
-  text-align: center;
-  letter-spacing: 8px !important;
-}
-
 .auth-footer {
   text-align: center;
   margin-top: var(--spacing-lg);

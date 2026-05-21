@@ -43,9 +43,7 @@ model User {
   name            String
   email           String    @unique
   password        String
-  otpCode         String?
-  otpExpiresAt    DateTime?
-  isVerified      Boolean   @default(false)
+  isVerified      Boolean   @default(true)
   profileImage    String    @default("")
   notifications   Notification[]
   reportedItems   Item[]    @relation("ReportedItems")

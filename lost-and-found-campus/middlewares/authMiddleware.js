@@ -42,14 +42,6 @@ const authMiddleware = async (req, res, next) => {
       });
     }
 
-    // Check if user is verified (completed OTP verification)
-    if (!user.isVerified) {
-      return res.status(403).json({
-        success: false,
-        message: 'Please verify your account before accessing this resource.',
-      });
-    }
-
     // Attach user to request object for use in route handlers
     req.user = user;
     next();
@@ -87,7 +79,7 @@ const optionalAuthMiddleware = async (req, res, next) => {
     if (token) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const user = await userService.findById(decoded.id);
-      if (user && user.isVerified) {
+      if (user) {
         req.user = user;
       }
     }

@@ -5,7 +5,6 @@
  * SYLLABUS CONCEPT: Mongoose ODM, Schemas, Pre-save hooks
  * - Defines user schema with validation
  * - Uses pre('save') hook for password hashing
- * - Stores OTP for 2FA verification
  * - Notifications array for match alerts
  */
 
@@ -35,13 +34,9 @@ const userSchema = new mongoose.Schema(
       minlength: [6, 'Password must be at least 6 characters'],
       select: false, // Don't return password in queries by default
     },
-    otp: {
-      code: String,
-      expiresAt: Date,
-    },
     isVerified: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     profileImage: {
       type: String,
@@ -115,43 +110,6 @@ userSchema.pre('save', async function (next) {
  */
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
-};
-
-/**
- * Instance method to generate OTP
- * Generates a 4-digit numeric OTP
- */
-userSchema.methods.generateOTP = function () {
-  const otp = Math.floor(1000 + Math.random() * 9000).toString();
-  this.otp = {
-    code: otp,
-    expiresAt: new Date(Date.now() + 5 * 60 * 1000), // OTP expires in 5 minutes
-  };
-  return otp;
-};
-
-/**
- * Instance method to verify OTP
- */
-userSchema.methods.verifyOTP = function (otp) {
-  if (!this.otp || !this.otp.code || !this.otp.expiresAt) {
-    return false;
-  }
-
-  // Check if OTP is expired
-  if (new Date() > this.otp.expiresAt) {
-    this.otp = undefined; // Clear expired OTP
-    return false;
-  }
-
-  // Check if OTP matches
-  if (this.otp.code === otp) {
-    this.otp = undefined; // Clear OTP after successful verification
-    this.isVerified = true; // Mark user as verified
-    return true;
-  }
-
-  return false;
 };
 
 /**

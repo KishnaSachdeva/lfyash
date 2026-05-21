@@ -1,6 +1,6 @@
 /**
  * Authentication Routes
- * Handles user registration, login, OTP verification, logout
+ * Handles user registration, login, logout
  *
  * SYLLABUS CONCEPT: Router-level middleware, Route handlers
  * - Uses express.Router() for modular routing
@@ -13,12 +13,9 @@ const router = express.Router();
 
 const {
   register,
-  verifyOtp,
   login,
-  verifyLoginOtp,
   logout,
   getMe,
-  resendOtp,
 } = require('../controllers/authController');
 
 const { validateEmail } = require('../middlewares/validateEmail');
@@ -32,25 +29,11 @@ const { authMiddleware, isAlreadyAuthenticated } = require('../middlewares/authM
 router.post('/register', validateEmail, register);
 
 /**
- * @route   POST /api/auth/verify-otp
- * @desc    Verify registration OTP
- * @access  Public
- */
-router.post('/verify-otp', verifyOtp);
-
-/**
  * @route   POST /api/auth/login
- * @desc    Login user (sends OTP for 2FA)
+ * @desc    Login user
  * @access  Public
  */
 router.post('/login', login);
-
-/**
- * @route   POST /api/auth/login-otp
- * @desc    Verify login OTP and issue JWT
- * @access  Public
- */
-router.post('/login-otp', verifyLoginOtp);
 
 /**
  * @route   POST /api/auth/logout
@@ -65,13 +48,6 @@ router.post('/logout', authMiddleware, logout);
  * @access  Private
  */
 router.get('/me', authMiddleware, getMe);
-
-/**
- * @route   POST /api/auth/resend-otp
- * @desc    Resend OTP for verification
- * @access  Public
- */
-router.post('/resend-otp', resendOtp);
 
 /**
  * @route   GET /api/auth/check

@@ -28,7 +28,7 @@ A modern, full-stack Lost and Found platform built for Chitkara University campu
 - Claim found items through real-time chat
 - Receive smart notifications when matching items are reported
 
-The platform uses **Two-Factor Authentication (2FA)** with OTP verification sent to college emails (`@chitkara.edu.in`), ensuring only verified students can access the system.
+The platform restricts signups to college emails (`@chitkara.edu.in`) and uses secure password hashing plus JWT-backed sessions.
 
 ---
 
@@ -37,7 +37,6 @@ The platform uses **Two-Factor Authentication (2FA)** with OTP verification sent
 ### Authentication & Security
 - **College Email Restriction**: Only `@chitkara.edu.in` emails allowed
 - **Password Hashing**: bcrypt with 10 salt rounds
-- **Two-Factor Authentication**: 4-digit OTP sent via email on registration and login
 - **JWT Tokens**: Stored in HTTP-only cookies for secure session management
 - **Session Management**: Persistent sessions stored in PostgreSQL
 
@@ -77,7 +76,6 @@ The platform uses **Two-Factor Authentication (2FA)** with OTP verification sent
 | **Session** | express-session, cookie-parser |
 | **Real-Time** | Socket.io |
 | **File Storage** | Cloudinary + Multer |
-| **Email** | Nodemailer |
 | **Testing** | Jest, Supertest |
 | **Logging** | Morgan |
 | **Frontend** | Vanilla JS, CSS3 |
@@ -94,7 +92,7 @@ lost-and-found-campus/
 │   ├── passport.js        # Passport.js configuration (optional)
 │   └── env.js             # Environment variable loader
 ├── controllers/
-│   ├── authController.js  # Register, login, OTP, logout logic
+│   ├── authController.js  # Register, login, logout logic
 │   ├── itemController.js  # Lost/Found CRUD, claim, search
 │   └── chatController.js  # Socket.io event handlers
 ├── services/
@@ -133,7 +131,6 @@ lost-and-found-campus/
 │   └── auth.test.js       # Unit tests for authentication
 ├── utils/
 │   ├── matchAlgo.js       # Smart matching algorithm
-│   └── sendOtp.js         # OTP email sender
 ├── app.js                 # Express app setup
 ├── server.js              # Server entry point, Socket.io init
 ├── package.json
@@ -173,7 +170,6 @@ lost-and-found-campus/
      `postgresql://USER:PASSWORD@localhost:5432/DATABASE_NAME?schema=public`
    - Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
    - Set `JWT_SECRET` and `SESSION_SECRET` to random secure strings
-   - Configure email credentials for OTP
 
 5. **Initialize Database:**
    ```bash
@@ -211,10 +207,6 @@ lost-and-found-campus/
 | `CLOUDINARY_CLOUD_NAME` | Cloudinary account name | (required) |
 | `CLOUDINARY_API_KEY` | Cloudinary API key | (required) |
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret | (required) |
-| `EMAIL_USER` | Gmail address for OTP | (required for email) |
-| `EMAIL_PASS` | Gmail app password | (required for email) |
-| `EMAIL_HOST` | SMTP host | smtp.gmail.com |
-| `EMAIL_PORT` | SMTP port | 587 |
 
 ---
 
@@ -225,9 +217,7 @@ lost-and-found-campus/
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
 | POST | `/register` | Register new user | No |
-| POST | `/verify-otp` | Verify OTP for registration | No |
 | POST | `/login` | Login with credentials | No |
-| POST | `/login-otp` | Verify login OTP (2FA) | No |
 | POST | `/logout` | Logout user | Yes |
 | GET | `/me` | Get current user | Yes |
 
@@ -314,7 +304,7 @@ Loads environment variables using `dotenv.config()`. Validates required variable
 ### Services (Business Logic Layer)
 
 #### `services/userService.js`
-Contains all User-related data operations: registration, password hashing, OTP generation, and session tracking.
+Contains all User-related data operations: registration, password hashing, and session tracking.
 
 #### `services/itemService.js`
 Handles item CRUD, integrates the smart matching algorithm, and manages image deletions from Cloudinary.
@@ -329,7 +319,7 @@ Handles creation and retrieval of user notifications.
 Now streamlined to handle request/response logic, delegating data operations to the Service layer.
 
 #### `controllers/authController.js`
-Logic for user registration, 2FA verification, login, and session management.
+Logic for user registration, login, and session management.
 
 #### `controllers/itemController.js`
 Logic for reporting lost/found items, claiming items, and searching listings.
@@ -365,7 +355,6 @@ For testing purposes, you can use these credentials:
 ```
 Email: test@chitkara.edu.in
 Password: Test123!
-OTP: Check console logs (development mode)
 ```
 
 ---

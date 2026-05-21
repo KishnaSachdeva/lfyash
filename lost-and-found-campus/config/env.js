@@ -33,12 +33,6 @@ const config = {
   jwtSecret: process.env.JWT_SECRET,
   jwtExpire: process.env.JWT_EXPIRE || '7d',
   sessionSecret: process.env.SESSION_SECRET,
-  email: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: process.env.EMAIL_PORT || 587,
-  },
 };
 
 module.exports = config;

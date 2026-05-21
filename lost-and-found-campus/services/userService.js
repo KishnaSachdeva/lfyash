@@ -40,39 +40,6 @@ const userService = {
     });
   },
 
-  async generateOTP(userId) {
-    const otpCode = Math.floor(1000 + Math.random() * 9000).toString();
-    const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
-
-    await prisma.user.update({
-      where: { id: userId },
-      data: { otpCode, otpExpiresAt },
-    });
-
-    return otpCode;
-  },
-
-  async verifyOTP(userId, code) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user || user.otpCode !== code || new Date() > user.otpExpiresAt) {
-      return false;
-    }
-
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        isVerified: true,
-        otpCode: null,
-        otpExpiresAt: null,
-      },
-    });
-
-    return true;
-  },
-
   async createSession(userId, sessionId) {
     return prisma.userSession.create({
       data: {

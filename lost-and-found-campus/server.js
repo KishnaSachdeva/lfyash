@@ -67,7 +67,6 @@ server.listen(PORT, () => {
   console.log('============================================');
   console.log(`🚀 Server running in ${process.env.NODE_ENV} mode`);
   console.log(`📍 Port: http://localhost:${PORT}`);
-  console.log(`📧 Email: ${process.env.EMAIL_USER || 'Not configured (dev mode)'}`);
   console.log(`🗄️  Database: ${process.env.DATABASE_URL ? 'PostgreSQL configured' : 'Not configured'}`);
   console.log('============================================');
   console.log('\nPress Ctrl+C to stop the server\n');

@@ -31,15 +31,15 @@ describe('Auth APIs', () => {
     expect(res.body.message).toContain('already exists');
   });
 
-  it('should verify a valid OTP', async () => {
-    // This would require mocking the OTP generation or knowing the OTP
-    // For now, we focus on the endpoint connectivity and structure
+  it('should login without a verification code', async () => {
     const res = await request(app)
-      .post('/api/auth/verify-otp')
+      .post('/api/auth/login')
       .send({
-        userId: 'some-uuid',
-        otp: '1234',
+        email: 'test@chitkara.edu.in',
+        password: 'password123',
       });
-    expect(res.statusCode).toBeDefined();
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty('success', true);
+    expect(res.body).toHaveProperty('token');
   });
 });
