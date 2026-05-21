@@ -1,0 +1,166 @@
+<%- include('partials/header') %>
+
+<!-- Dashboard Container -->
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside class="dashboard-sidebar">
+    <div class="sidebar-header">
+      <h3>Dashboard</h3>
+      <p>Welcome, <%= user.name %>!</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/dashboard" class="sidebar-link active">
+        <span class="link-icon">📊</span>
+        Overview
+      </a>
+      <a href="/report?type=lost" class="sidebar-link">
+        <span class="link-icon">🔍</span>
+        Report Lost
+      </a>
+      <a href="/report?type=found" class="sidebar-link">
+        <span class="link-icon">✅</span>
+        Report Found
+      </a>
+      <a href="/items" class="sidebar-link">
+        <span class="link-icon">📦</span>
+        Browse Items
+      </a>
+      <a href="/items/my" class="sidebar-link">
+        <span class="link-icon">📋</span>
+        My Items
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <form action="/api/auth/logout" method="POST">
+        <button type="submit" class="sidebar-link logout">
+          <span class="link-icon">🚪</span>
+          Logout
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <div class="dashboard-header">
+      <h1>Dashboard Overview</h1>
+      <p>Manage your lost and found items</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-blue">📦</div>
+        <div class="stat-content">
+          <span class="stat-value"><%= stats.total %></span>
+          <span class="stat-label">Total Items</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-orange">🔍</div>
+        <div class="stat-content">
+          <span class="stat-value"><%= stats.active %></span>
+          <span class="stat-label">Active</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-green">✅</div>
+        <div class="stat-content">
+          <span class="stat-value"><%= stats.resolved %></span>
+          <span class="stat-label">Resolved</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Items -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2>Recent Items</h2>
+        <a href="/items/my" class="view-all-link">View All →</a>
+      </div>
+
+      <% if (userItems.length > 0) { %>
+        <div class="items-grid">
+          <% userItems.forEach(item => { %>
+            <div class="item-card">
+              <div class="item-badge <%= item.type %>"><%= item.type %></div>
+              <% if (item.image) { %>
+                <img src="<%= item.image %>" alt="<%= item.title %>" class="item-image">
+              <% } else { %>
+                <div class="item-image-placeholder">📦</div>
+              <% } %>
+              <div class="item-content">
+                <h3 class="item-title"><%= item.title %></h3>
+                <p class="item-category"><%= item.category %></p>
+                <p class="item-location">📍 <%= item.location %></p>
+                <div class="item-meta">
+                  <span class="item-status status-<%= item.status %>">
+                    <%= item.status %>
+                  </span>
+                  <span class="item-date"><%= new Date(item.createdAt).toLocaleDateString() %></span>
+                </div>
+                <div class="item-actions">
+                  <a href="/item/<%= item.id %>" class="btn btn-sm btn-primary">View</a>
+                  <% if (item.status === 'claimed') { %>
+                    <a href="/chat/<%= item.id %>" class="btn btn-sm btn-secondary">Chat</a>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          <div class="empty-icon">📦</div>
+          <h3>No Items Yet</h3>
+          <p>Report your first lost or found item to get started.</p>
+          <a href="/report" class="btn btn-primary">Report Item</a>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Notifications Section -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2>Recent Notifications</h2>
+        <% if (unreadCount > 0) { %>
+          <span class="badge badge-primary"><%= unreadCount %> new</span>
+        <% } %>
+      </div>
+
+      <% if (notifications.length > 0) { %>
+        <div class="notification-list-dashboard">
+          <% notifications.slice(0, 5).forEach(notification => { %>
+            <div class="notification-item <%= notification.isRead ? 'read' : 'unread' %>">
+              <div class="notification-icon">
+                <% if (notification.type === 'match') { %>🔍
+                <% } else if (notification.type === 'claim') { %>💬
+                <% } else if (notification.type === 'resolution') { %>✅
+                <% } else { %>📢<% } %>
+              </div>
+              <div class="notification-content">
+                <p class="notification-message"><%= notification.message %></p>
+                <span class="notification-time"><%= new Date(notification.createdAt).toLocaleString() %></span>
+              </div>
+              <% if (!notification.isRead) { %>
+                <div class="notification-dot"></div>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          <div class="empty-icon">🔔</div>
+          <h3>No Notifications</h3>
+          <p>You're all caught up!</p>
+        </div>
+      <% } %>
+    </div>
+  </main>
+</div>
+
+<%- include('partials/footer') %>

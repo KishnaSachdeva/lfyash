@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ItemType {
+  LOST
+  FOUND
+}
+
+enum ItemCategory {
+  Electronics
+  Clothing
+  Books
+  Accessories
+  Other
+}
+
+enum ItemStatus {
+  ACTIVE
+  CLAIMED
+  RESOLVED
+}
+
+enum NotificationType {
+  MATCH
+  CLAIM
+  RESOLUTION
+  GENERAL
+}
+
+enum MessageType {
+  TEXT
+  SYSTEM
+}
+
+model User {
+  id              String    @id @default(uuid())
+  name            String
+  email           String    @unique
+  password        String
+  otpCode         String?
+  otpExpiresAt    DateTime?
+  isVerified      Boolean   @default(false)
+  profileImage    String    @default("")
+  notifications   Notification[]
+  reportedItems   Item[]    @relation("ReportedItems")
+  claimedItems    Item[]    @relation("ClaimedItems")
+  messages        ChatMessage[]
+  sessions        UserSession[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("users")
+}
+
+model Item {
+  id            String      @id @default(uuid())
+  type          ItemType
+  title         String
+  description   String
+  category      ItemCategory
+  location      String
+  date          DateTime
+  image         String      @default("")
+  status        ItemStatus   @default(ACTIVE)
+  reportedById  String
+  reportedBy    User        @relation("ReportedItems", fields: [reportedById], references: [id])
+  claimedById   String?
+  claimedBy     User?       @relation("ClaimedItems", fields: [claimedById], references: [id])
+  keywords      String[]
+  messages      ChatMessage[]
+  notifications Notification[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("items")
+}
+
+model ChatMessage {
+  id          String      @id @default(uuid())
+  itemId      String
+  item        Item        @relation(fields: [itemId], references: [id])
+  senderId    String
+  sender      User        @relation(fields: [senderId], references: [id])
+  message     String
+  isRead      Boolean     @default(false)
+  messageType MessageType  @default(TEXT)
+  createdAt   DateTime    @default(now())
+
+  @@map("chat_messages")
+}
+
+model Notification {
+  id        String          @id @default(uuid())
+  userId    String
+  user      User            @relation(fields: [userId], references: [id])
+  type      NotificationType
+  message   String
+  itemId    String?
+  item      Item?           @relation(fields: [itemId], references: [id])
+  isRead    Boolean         @default(false)
+  createdAt DateTime        @default(now())
+
+  @@map("notifications")
+}
+
+model UserSession {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  sessionId String
+  loginTime DateTime @default(now())
+
+  @@map("user_sessions")
+}

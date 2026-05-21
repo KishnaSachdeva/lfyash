@@ -1,0 +1,154 @@
+<%- include('partials/header') %>
+
+<!-- Item Detail Container -->
+<div class="item-detail-container">
+  <a href="/items" class="back-link">← Back to Items</a>
+
+  <div class="item-detail-card">
+    <!-- Item Image -->
+    <div class="item-detail-image">
+      <% if (item.image) { %>
+        <img src="<%= item.image %>" alt="<%= item.title %>">
+      <% } else { %>
+        <div class="image-placeholder">
+          <span>📦</span>
+          <p>No image available</p>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Item Details -->
+    <div class="item-detail-content">
+      <div class="item-detail-header">
+        <span class="item-badge <%= item.type %>"><%= item.type %></span>
+        <span class="item-status status-<%= item.status %>"><%= item.status %></span>
+      </div>
+
+      <h1 class="item-detail-title"><%= item.title %></h1>
+
+      <div class="item-detail-meta">
+        <span class="meta-item">
+          <span class="meta-icon">📂</span>
+          <%= item.category %>
+        </span>
+        <span class="meta-item">
+          <span class="meta-icon">📍</span>
+          <%= item.location %>
+        </span>
+        <span class="meta-item">
+          <span class="meta-icon">📅</span>
+          <%= new Date(item.date).toLocaleDateString() %>
+        </span>
+      </div>
+
+      <div class="item-detail-section">
+        <h3>Description</h3>
+        <p class="item-detail-description"><%= item.description %></p>
+      </div>
+
+      <div class="item-detail-section">
+        <h3>Reported By</h3>
+        <div class="reporter-info">
+          <div class="reporter-avatar">👤</div>
+          <div class="reporter-details">
+            <p class="reporter-name"><%= item.reportedBy.name %></p>
+            <p class="reporter-email"><%= item.reportedBy.email %></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="item-detail-actions">
+        <% if (typeof user !== 'undefined' && user) { %>
+          <% if (item.type === 'found' && item.status === 'active' && user.id !== item.reportedById) { %>
+            <form action="/api/items/<%= item.id %>/claim" method="POST" class="action-form">
+              <button type="submit" class="btn btn-primary btn-lg btn-block">
+                <span class="btn-icon">🙋</span>
+                Claim This Item
+              </button>
+            </form>
+            <p class="action-hint">Clicking claim will open a chat with the finder</p>
+          <% } else if (user.id === item.reportedById) { %>
+            <div class="owner-actions">
+              <a href="/item/edit/<%= item.id %>" class="btn btn-secondary btn-lg btn-block">
+                <span class="btn-icon">✏️</span>
+                Edit Item
+              </a>
+              <% if (item.status === 'claimed') { %>
+                <a href="/chat/<%= item.id %>" class="btn btn-primary btn-lg btn-block">
+                  <span class="btn-icon">💬</span>
+                  Open Chat
+                </a>
+              <% } %>
+              <% if (item.status !== 'resolved') { %>
+                <div class="action-group">
+                  <button type="button" onclick="resolveItem('<%= item.id %>')" class="btn btn-success btn-lg btn-block">
+                    <span class="btn-icon">✅</span>
+                    Mark as Resolved
+                  </button>
+                </div>
+              <% } %>
+              <div class="action-group">
+                <button type="button" onclick="deleteItem('<%= item.id %>')" class="btn btn-danger btn-lg btn-block">
+                  <span class="btn-icon">🗑️</span>
+                  Delete Item
+                </button>
+              </div>
+            </div>
+          <% } else { %>
+            <p class="action-info">You cannot claim this item</p>
+          <% } %>
+        <% } else { %>
+          <a href="/login" class="btn btn-primary btn-lg btn-block">
+            Login to Claim
+          </a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  async function resolveItem(id) {
+    if (!confirm('Are you sure you want to mark this item as resolved?')) return;
+
+    try {
+      const response = await fetch(`/api/items/${id}/resolve`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        showFlashMessage('Item marked as resolved!', 'success');
+        window.location.reload();
+      } else {
+        showFlashMessage(data.message || 'Failed to resolve item', 'error');
+      }
+    } catch (error) {
+      showFlashMessage('Network error. Please try again.', 'error');
+    }
+  }
+
+  async function deleteItem(id) {
+    if (!confirm('Are you sure you want to delete this item? This action cannot be undone.')) return;
+
+    try {
+      const response = await fetch(`/api/items/${id}`, {
+        method: 'DELETE'
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        showFlashMessage('Item deleted successfully!', 'success');
+        window.location.href = '/items';
+      } else {
+        showFlashMessage(data.message || 'Failed to delete item', 'error');
+      }
+    } catch (error) {
+      showFlashMessage('Network error. Please try again.', 'error');
+    }
+  }
+</script>
+
+<%- include('partials/footer') %>

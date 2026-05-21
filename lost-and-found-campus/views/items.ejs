@@ -1,0 +1,79 @@
+<%- include('partials/header') %>
+
+<!-- Items Container -->
+<div class="items-container">
+  <div class="items-header">
+    <h1><%= filter.type ? filter.type.charAt(0).toUpperCase() + filter.type.slice(1) : 'All' %> Items</h1>
+    <p>Browse all <%= filter.type || 'lost and found' %> items on campus</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="items-filters">
+    <form class="filter-form" method="GET" action="/items">
+      <div class="filter-group">
+        <select name="type" class="filter-select">
+          <option value="">All Types</option>
+          <option value="lost" <%= filter.type === 'lost' ? 'selected' : '' %>>Lost</option>
+          <option value="found" <%= filter.type === 'found' ? 'selected' : '' %>>Found</option>
+        </select>
+
+        <select name="category" class="filter-select">
+          <option value="">All Categories</option>
+          <option value="Electronics" <%= filter.category === 'Electronics' ? 'selected' : '' %>>Electronics</option>
+          <option value="Clothing" <%= filter.category === 'Clothing' ? 'selected' : '' %>>Clothing</option>
+          <option value="Books" <%= filter.category === 'Books' ? 'selected' : '' %>>Books</option>
+          <option value="Accessories" <%= filter.category === 'Accessories' ? 'selected' : '' %>>Accessories</option>
+          <option value="Other" <%= filter.category === 'Other' ? 'selected' : '' %>>Other</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="/items" class="btn btn-secondary">Clear</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Items Grid -->
+  <% if (items.length > 0) { %>
+    <div class="items-grid">
+      <% items.forEach(item => { %>
+        <div class="item-card">
+          <div class="item-badge <%= item.type %>"><%= item.type %></div>
+          <% if (item.image) { %>
+            <img src="<%= item.image %>" alt="<%= item.title %>" class="item-image">
+          <% } else { %>
+            <div class="item-image-placeholder">📦</div>
+          <% } %>
+          <div class="item-content">
+            <h3 class="item-title"><%= item.title %></h3>
+            <p class="item-category"><%= item.category %></p>
+            <p class="item-description"><%= item.description.substring(0, 100) %><%= item.description.length > 100 ? '...' : '' %></p>
+            <p class="item-location">📍 <%= item.location %></p>
+            <div class="item-meta">
+              <span class="item-status status-<%= item.status %>">
+                <%= item.status %>
+              </span>
+              <span class="item-date"><%= new Date(item.date).toLocaleDateString() %></span>
+            </div>
+            <div class="item-actions">
+              <a href="/item/<%= item.id %>" class="btn btn-sm btn-primary">View Details</a>
+              <% if (typeof user !== 'undefined' && user && item.type === 'found' && item.status === 'active') { %>
+                <form action="/api/items/<%= item.id %>/claim" method="POST" style="display: inline;">
+                  <button type="submit" class="btn btn-sm btn-secondary">Claim</button>
+                </form>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <h3>No Items Found</h3>
+      <p>Try adjusting your filters or check back later.</p>
+      <a href="/items" class="btn btn-primary">Clear Filters</a>
+    </div>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,214 @@
+<%- include('partials/header') %>
+
+<!-- Edit Item Container -->
+<div class="report-container">
+  <div class="report-card">
+    <div class="report-header">
+      <h1>Edit Item</h1>
+      <p>Update the details of your reported item</p>
+    </div>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-error">
+        <span class="alert-icon">⚠️</span>
+        <%= error %>
+      </div>
+    <% } %>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+      <div class="alert alert-success">
+        <span class="alert-icon">✅</span>
+        <%= success %>
+      </div>
+    <% } %>
+
+    <form class="report-form" id="editItemForm" action="/api/items/<%= item.id %>" method="POST" enctype="multipart/form-data">
+      <!-- Use method-override for PATCH -->
+      <input type="hidden" name="_method" value="PATCH">
+
+      <!-- Type Selection (Items cannot change type after reporting) -->
+      <div class="form-group">
+        <label>Report Type</label>
+        <div class="type-selector">
+          <label class="type-option">
+            <input type="radio" name="type" value="lost" <%= item.type === 'LOST' ? 'checked' : '' %> disabled>
+            <span class="type-card <%= item.type === 'LOST' ? 'selected' : '' %>">
+              <span class="type-icon">🔍</span>
+              <span class="type-label">Lost Item</span>
+              <span class="type-desc">I lost something</span>
+            </span>
+          </label>
+          <label class="type-option">
+            <input type="radio" name="type" value="found" <%= item.type === 'FOUND' ? 'checked' : '' %> disabled>
+            <span class="type-card <%= item.type === 'FOUND' ? 'selected' : '' %>">
+              <span class="type-icon">✅</span>
+              <span class="type-label">Found Item</span>
+              <span class="type-desc">I found something</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Item Details -->
+      <div class="form-group">
+        <label for="title">Item Title</label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          value="<%= item.title %>"
+          placeholder="e.g., Blue iPhone 13 Pro"
+          required
+          maxlength="100"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select id="category" name="category" required>
+          <option value="">Select a category</option>
+          <option value="Electronics" <%= item.category === 'Electronics' ? 'selected' : '' %>>Electronics</option>
+          <option value="Clothing" <%= item.category === 'Clothing' ? 'selected' : '' %>>Clothing</option>
+          <option value="Books" <%= item.category === 'Books' ? 'selected' : '' %>>Books</option>
+          <option value="Accessories" <%= item.category === 'Accessories' ? 'selected' : '' %>>Accessories</option>
+          <option value="Other" <%= item.category === 'Other' ? 'selected' : '' %>>Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          placeholder="Describe the item in detail..."
+          required
+          maxlength="1000"
+          rows="5"
+        ><%= item.description %></textarea>
+        <span class="form-hint"><span id="charCount"><%= item.description.length %></span>/1000 characters</span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            value="<%= item.location %>"
+            placeholder="e.g., Library, Block 4, Room 302"
+            required
+            maxlength="200"
+          >
+          <span class="form-hint">Where was it lost/found?</span>
+        </div>
+
+        <div class="form-group">
+          <label for="date">Date</label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value="<%= item.date.toISOString().split('T')[0] %>"
+            required
+            max="<%= new Date().toISOString().split('T')[0] %>"
+          >
+        </div>
+      </div>
+
+      <!-- Image Upload -->
+      <div class="form-group">
+        <label for="image">Upload Image (Optional)</label>
+        <div class="file-upload">
+          <input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            class="file-input"
+          >
+          <label for="image" class="file-label">
+            <span class="file-icon">📷</span>
+            <span class="file-text">Update image</span>
+            <span class="file-hint">PNG, JPG, GIF up to 5MB</span>
+          </label>
+          <div class="file-preview" id="filePreview">
+            <% if (item.image) { %>
+              <img src="<%= item.image %>" alt="Current image" class="preview-image">
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-lg btn-block">
+          Update Item Details
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Character counter for description
+  const descriptionInput = document.getElementById('description');
+  const charCount = document.getElementById('charCount');
+
+  descriptionInput.addEventListener('input', () => {
+    charCount.textContent = descriptionInput.value.length;
+  });
+
+  // File upload preview
+  const imageInput = document.getElementById('image');
+  const filePreview = document.getElementById('filePreview');
+
+  imageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        filePreview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="preview-image">`;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Form submission
+  document.getElementById('editItemForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    try {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Updating...';
+
+      const response = await fetch(form.action, {
+        method: 'PATCH',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        showFlashMessage('Item updated successfully!', 'success');
+        setTimeout(() => {
+          window.location.href = '/item/<%= item.id %>';
+        }, 1500);
+      } else {
+        showFlashMessage(data.message || 'Failed to update item', 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Update Item Details';
+      }
+    } catch (error) {
+      showFlashMessage('Network error. Please try again.', 'error');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Update Item Details';
+    }
+  });
+</script>
+
+<%- include('partials/footer') %>

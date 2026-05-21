@@ -1,0 +1,47 @@
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>EduPortaile</h3>
+          <p>Connecting lost items with their owners on Chitkara University campus.</p>
+        </div>
+
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="/items?type=lost">Lost Items</a></li>
+            <li><a href="/items?type=found">Found Items</a></li>
+            <li><a href="/report">Report Item</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h4>Categories</h4>
+          <ul>
+            <li><a href="/items?category=Electronics">Electronics</a></li>
+            <li><a href="/items?category=Clothing">Clothing</a></li>
+            <li><a href="/items?category=Books">Books</a></li>
+            <li><a href="/items?category=Accessories">Accessories</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h4>Contact</h4>
+          <p>For support, contact your college IT department.</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; <%= new Date().getFullYear() %> EduPortaile. Built for Chitkara University.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Main JavaScript -->
+  <script src="/js/main.js"></script>
+
+  <!-- Page-specific scripts -->
+  <%- typeof pageScript !== 'undefined' ? pageScript : '' %>
+</body>
+</html>

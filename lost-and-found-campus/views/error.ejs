@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+
+<!-- Error Page -->
+<div class="error-container">
+  <div class="error-content">
+    <div class="error-icon">⚠️</div>
+    <h1 class="error-title"><%= title || 'Error' %></h1>
+    <p class="error-message"><%= message || 'Something went wrong' %></p>
+    <a href="/" class="btn btn-primary">Go Home</a>
+  </div>
+</div>
+
+<style>
+  .error-container {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .error-content {
+    text-align: center;
+    max-width: 500px;
+  }
+
+  .error-icon {
+    font-size: 5rem;
+    margin-bottom: 24px;
+  }
+
+  .error-title {
+    font-size: 2rem;
+    margin-bottom: 16px;
+    color: var(--text-color);
+  }
+
+  .error-message {
+    color: var(--text-muted);
+    margin-bottom: 32px;
+    font-size: 1.1rem;
+  }
+</style>
+
+<%- include('partials/footer') %>

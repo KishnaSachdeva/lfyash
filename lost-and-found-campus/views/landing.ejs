@@ -1,0 +1,170 @@
+<%- include('partials/header') %>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-background">
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span>🎓</span> For Chitkara University
+    </div>
+
+    <h1 class="hero-title">
+      Lost Something?<br>
+      <span class="gradient-text">We'll Help You Find It</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      EduPortaile connects students across campus to reunite lost belongings with their rightful owners. Report, search, and recover — all in one place.
+    </p>
+
+    <div class="hero-cta">
+      <a href="/register" class="btn btn-primary btn-lg">
+        Get Started
+        <span class="btn-arrow">→</span>
+      </a>
+      <a href="/items" class="btn btn-secondary btn-lg">
+        Browse Items
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-number">100+</span>
+        <span class="stat-label">Items Recovered</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">500+</span>
+        <span class="stat-label">Active Users</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">95%</span>
+        <span class="stat-label">Success Rate</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="floating-cards">
+      <div class="floating-card card-1">
+        <div class="card-icon">📱</div>
+        <div class="card-text">
+          <span class="card-title">Lost Phone</span>
+          <span class="card-location">Library, Block 4</span>
+        </div>
+      </div>
+      <div class="floating-card card-2">
+        <div class="card-icon">🎒</div>
+        <div class="card-text">
+          <span class="card-title">Found Backpack</span>
+          <span class="card-location">Cafeteria</span>
+        </div>
+      </div>
+      <div class="floating-card card-3">
+        <div class="card-icon">📚</div>
+        <div class="card-text">
+          <span class="card-title">Found Calculator</span>
+          <span class="card-location">Lab 302</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">How It Works</span>
+      <h2 class="section-title">Simple Steps to Recover Your Items</h2>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📝</div>
+        <h3>Report Lost Item</h3>
+        <p>Fill in details about your lost item — category, location, date, and upload a photo if available.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>Smart Matching</h3>
+        <p>Our algorithm automatically matches lost items with found reports based on keywords and location.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <h3>Real-Time Chat</h3>
+        <p>Connect directly with the person who found your item through our secure chat system.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">✅</div>
+        <h3>Recover & Resolve</h3>
+        <p>Coordinate pickup, get your item back, and mark the case as resolved to help others.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Browse by Category</span>
+      <h2 class="section-title">What Are You Looking For?</h2>
+    </div>
+
+    <div class="categories-grid">
+      <a href="/items?category=Electronics" class="category-card">
+        <span class="category-icon">📱</span>
+        <span class="category-name">Electronics</span>
+        <span class="category-count">Phones, Laptops, Chargers</span>
+      </a>
+
+      <a href="/items?category=Clothing" class="category-card">
+        <span class="category-icon">👕</span>
+        <span class="category-name">Clothing</span>
+        <span class="category-count">Jackets, Bags, Shoes</span>
+      </a>
+
+      <a href="/items?category=Books" class="category-card">
+        <span class="category-icon">📚</span>
+        <span class="category-name">Books</span>
+        <span class="category-count">Textbooks, Notes, Journals</span>
+      </a>
+
+      <a href="/items?category=Accessories" class="category-card">
+        <span class="category-icon">⌚</span>
+        <span class="category-name">Accessories</span>
+        <span class="category-count">Watches, Keys, Wallets</span>
+      </a>
+
+      <a href="/items?category=Other" class="category-card">
+        <span class="category-icon">📦</span>
+        <span class="category-name">Other</span>
+        <span class="category-count">Everything Else</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta">
+  <div class="container">
+    <div class="cta-content">
+      <h2>Ready to Find Your Lost Item?</h2>
+      <p>Join hundreds of students who've successfully recovered their belongings through EduPortaile.</p>
+      <div class="cta-buttons">
+        <a href="/register" class="btn btn-primary btn-lg">Create Account</a>
+        <a href="/items" class="btn btn-outline-light btn-lg">View All Items</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
